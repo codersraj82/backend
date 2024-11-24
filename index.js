@@ -73,7 +73,7 @@ app.get("/upload", (req, res) => {
   });
 });
 
-app.delete("/delete-upload/:fileName", (req, res) => {
+app.delete("/upload/:fileName", (req, res) => {
   const { fileName } = req.params;
   const filePath = path.join(uploadDir, fileName);
 
