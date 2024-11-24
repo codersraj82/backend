@@ -8,7 +8,14 @@ const app = express();
 const PORT = 5000;
 
 // Middleware
-app.use(cors());
+// app.use(cors());
+// Enable CORS for your frontend
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://xrd-4bgx.onrender.com"], // Allow local and deployed frontend
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -43,6 +50,13 @@ app.post("/upload", upload.single("file"), (req, res) => {
   res.status(200).json({ message: "File uploaded successfully!" });
 });
 
+app.get("/upload", (req, res) => {
+  res.send("This route only supports POST requests for file uploads.");
+});
+
+app.get("/", (req, res) => {
+  res.send("Hello, World!");
+});
 // Serve uploaded files statically (optional)
 app.use("/uploads", express.static(uploadDir));
 
