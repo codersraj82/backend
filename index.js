@@ -62,7 +62,7 @@ app.post("/upload", upload.single("file"), (req, res) => {
   res.status(200).json({ message: "File uploaded successfully!" });
 });
 
-app.get("/upload/files", (req, res) => {
+app.get("/upload", (req, res) => {
   fs.readdir(uploadDir, (err, files) => {
     if (err) {
       console.error("Error reading directory:", err);
