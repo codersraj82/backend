@@ -4,7 +4,7 @@
   "description": "XRD Material Analysis",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node index.js",
     "dev": "concurrently \"npm start --prefix ../frontend\" \"node server.js\""
   },
   "keywords": [
