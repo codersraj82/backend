@@ -11,7 +11,7 @@ const PORT = 5000;
 // app.use(cors());
 // Enable CORS for your frontend
 
-// Configure CORS settings
+// Configure CORS settings //
 const corsOptions = {
   origin: "*",
   //[
