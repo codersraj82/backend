@@ -11,14 +11,31 @@ const PORT = 5000;
 // app.use(cors());
 // Enable CORS for your frontend
 
-// Allow CORS from frontend domain
+// Configure CORS settings
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://xrd-4bgx.onrender.com"], // Update with the correct frontend URL
-  methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-  credentials: true, // Optional: Include cookies if needed
+  origin: "*",
+  //[
+  //   "http://localhost:3000", // Local frontend URL for dev
+  //   "https://xrd-4bgx.onrender.com", // Frontend URL on Render
+  // ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true, // Allow credentials like cookies to be sent with requests
+  allowedHeaders: [
+    "Origin",
+    "X-Requested-With",
+    "Content-Type",
+    "Accept",
+    "Authorization",
+  ], // Specific allowed headers
 };
 
 app.use(cors(corsOptions));
+
+// Handle preflight (OPTIONS) requests
+app.options("*", (req, res) => {
+  res.status(200).end();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
