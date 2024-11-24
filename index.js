@@ -10,9 +10,12 @@ const PORT = 5000;
 // Middleware
 // app.use(cors());
 // Enable CORS for your frontend
+
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://xrd-4bgx.onrender.com"], // Allow local and deployed frontend
+    origin: ["http://localhost:3000", "https://xrd-4bgx.onrender.com/"], // URL of your deployed React app
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+    credentials: true, // Optional: Include cookies in requests if needed
   })
 );
 
