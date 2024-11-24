@@ -9,10 +9,11 @@ const PORT = 5000;
 
 // Middleware
 const corsOptions = {
-  origin: [
-    "http://localhost:3000", // Local frontend URL for dev
-    "https://xrd-4bgx.onrender.com", // Frontend URL on Render
-  ],
+  origin: "*",
+  //   [
+  //   "http://localhost:3000", // Local frontend URL for dev
+  //   "https://xrd-4bgx.onrender.com", // Frontend URL on Render
+  // ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
   allowedHeaders: [
