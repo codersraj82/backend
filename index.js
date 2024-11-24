@@ -23,9 +23,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // File upload setup
-const uploadDir = path.join(__dirname, "uploads");
+// const uploadDir = path.join(__dirname, "uploads");
+// if (!fs.existsSync(uploadDir)) {
+//   fs.mkdirSync(uploadDir);
+// }
+const uploadDir = path.join(__dirname, "tmp/uploads");
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
@@ -41,7 +45,10 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB limit
+});
 
 // Routes
 app.post("/upload", upload.single("file"), (req, res) => {
