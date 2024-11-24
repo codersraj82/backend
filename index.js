@@ -11,14 +11,14 @@ const PORT = 5000;
 // app.use(cors());
 // Enable CORS for your frontend
 
-app.use(
-  cors({
-    origin: "https://xrd-4bgx.onrender.com", // URL of your deployed React app
-    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
-    credentials: true, // Optional: Include cookies in requests if needed
-  })
-);
+// Allow CORS from frontend domain
+const corsOptions = {
+  origin: ["http://localhost:3000", "https://xrd-4bgx.onrender.com"], // Update with the correct frontend URL
+  methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+  credentials: true, // Optional: Include cookies if needed
+};
 
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -60,6 +60,20 @@ app.post("/upload", upload.single("file"), (req, res) => {
   res.status(200).json({ message: "File uploaded successfully!" });
 });
 
+app.options("*", (req, res) => {
+  res.sendStatus(200); // Respond with status 200 for OPTIONS requests
+});
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // Allow all origins or specify the exact origin
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Allowed methods
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, Content-Type, X-Requested-With, Accept, Authorization"
+  ); // Allowed headers
+  res.header("Access-Control-Allow-Credentials", "true"); // Allow credentials if needed
+  next();
+});
 app.get("/upload", (req, res) => {
   res.send("This route only supports POST requests for file uploads.");
 });
