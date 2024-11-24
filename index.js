@@ -13,11 +13,11 @@ const PORT = 5000;
 
 // Configure CORS settings
 const corsOptions = {
-  origin: "*",
-  //[
-  //   "http://localhost:3000", // Local frontend URL for dev
-  //   "https://xrd-4bgx.onrender.com", // Frontend URL on Render
-  // ],
+  //"*",
+  origin: [
+    "http://localhost:3000", // Local frontend URL for dev
+    "https://xrd-4bgx.onrender.com", // Frontend URL on Render
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true, // Allow credentials like cookies to be sent with requests
   allowedHeaders: [
