@@ -13,7 +13,7 @@ const PORT = 5000;
 
 app.use(
   cors({
-    origin: "https://xrd-4bgx.onrender.com/", // URL of your deployed React app
+    origin: ["http://localhost:3000", "https://xrd-4bgx.onrender.com/"], // URL of your deployed React app
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
     credentials: true, // Optional: Include cookies in requests if needed
   })
