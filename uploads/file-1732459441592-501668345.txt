@@ -1,1 +1,0 @@
-use following source code and write a function to implement the logic of  generate yellow colored transparent bubble continuously at liquid of jargroup, move these yellow bubbles through bridgeGroup and spread into jarClone liquid and disappear after some time:
