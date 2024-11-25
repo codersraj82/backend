@@ -29,10 +29,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // File upload directory
-const uploadDir = path.join(
-  __dirname,
-  process.env.FILE_STORAGE_PATH || "./uploads"
-);
+const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
