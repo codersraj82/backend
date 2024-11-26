@@ -93,63 +93,33 @@ app.get("/upload/:fileName", (req, res) => {
 // Process a file using Python
 app.post("/process/:fileName", (req, res) => {
   const { fileName } = req.params;
-  const filePath = path.join(uploadDir, fileName);
+  const filePath = path.join(__dirname, "uploads", fileName); // Ensure this points to the uploaded file location
+  const outputDir = path.join(__dirname, "outputs"); // Define the output directory
 
-  // Check if the file exists
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ error: "File not found" });
-  }
-
-  // Ensure the outputs directory exists
-  const outputDir = path.join(__dirname, "outputs");
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
-
-  // Define paths for output files
-  const outputImage = path.join(outputDir, `${fileName}-output.jpg`);
-  const outputPdf = path.join(outputDir, `${fileName}-output.pdf`);
-
-  // Call the Python script
-  const pythonProcess = spawn("python", [
-    path.join(__dirname, "python_scripts", "process_file.py"),
-    filePath,
-    outputImage,
-    outputPdf,
-  ]);
-
-  // Capture Python script's standard output and errors
-  pythonProcess.stdout.on("data", (data) => {
-    // console.log(Python script stdout: ${data});
-  });
-
-  pythonProcess.stderr.on("data", (data) => {
-    // console.error(Python script stderr: ${data});
-  });
-
-  // Handle script completion
-  pythonProcess.on("exit", (code) => {
-    if (code === 0) {
-      console.log("Python script completed successfully.");
-      return res.status(200).json({
-        message: "File processed successfully!",
-        outputs: {
-          image: path.basename(outputImage),
-          pdf: path.basename(outputPdf),
-        },
-      });
-    } else {
-      console.error("Python script exited with code:", code);
-      return res.status(500).json({
-        error: "Failed to process the file. See server logs for details.",
-      });
+  // Use PythonShell to run the script
+  const pythonProcess = PythonShell.run(
+    "./python_scripts/process_file.py",
+    {
+      args: [filePath, outputDir],
+    },
+    (err, results) => {
+      if (err) {
+        console.error("Error running Python script:", err);
+        return res.status(500).json({ error: "Failed to process the file." });
+      }
+      console.log("Python script results:", results);
+      res
+        .status(200)
+        .json({ message: "File processed successfully!", results });
     }
-  });
+  );
 
-  // Handle Python script execution errors
-  pythonProcess.on("error", (error) => {
-    console.error("Error starting Python process:", error);
-    res.status(500).json({ error: "Error executing the Python script." });
+  // Ensure proper error handling for process exit
+  pythonProcess.on("exit", (code) => {
+    if (code !== 0) {
+      console.error(`Python process exited with code ${code}`);
+      res.status(500).json({ error: "Python script execution failed." });
+    }
   });
 });
 
