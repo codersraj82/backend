@@ -111,25 +111,38 @@ app.post("/process/:fileName", (req, res) => {
   const outputPdf = path.join(outputDir, `${fileName}-output.pdf`);
 
   // Use PythonShell to run the script
-  const pythonProcess = spawn("./venv/bin/python", [
+  const pythonProcess = PythonShell.run(
     "./python_scripts/process_file.py",
-    filePath,
-    outputDir,
-    outputPdf,
-  ]);
+    {
+      pythonPath: "./venv/bin/python", // Point to virtual environment Python
+      args: [filePath, outputDir],
+    },
+    (err, results) => {
+      if (err) {
+        console.error("Error running Python script:", err);
+        return res.status(500).json({ error: "Failed to process the file." });
+      }
+      console.log("Python script results:", results);
+      res
+        .status(200)
+        .json({ message: "File processed successfully!", results });
+    }
+  );
 
+  // Capture Python script's standard output and errors
   pythonProcess.stdout.on("data", (data) => {
-    console.log(`Python script stdout: ${data}`);
+    // console.log(Python script stdout: ${data});
   });
 
   pythonProcess.stderr.on("data", (data) => {
-    console.error(`Python script stderr: ${data}`);
+    // console.error(Python script stderr: ${data});
   });
 
-  pythonProcess.on("close", (code) => {
+  // Handle script completion
+  pythonProcess.on("exit", (code) => {
     if (code === 0) {
       console.log("Python script completed successfully.");
-      res.status(200).json({
+      return res.status(200).json({
         message: "File processed successfully!",
         outputs: {
           image: path.basename(outputImage),
@@ -137,13 +150,14 @@ app.post("/process/:fileName", (req, res) => {
         },
       });
     } else {
-      console.error(`Python script exited with code ${code}`);
-      res.status(500).json({
+      console.error("Python script exited with code:", code);
+      return res.status(500).json({
         error: "Failed to process the file. See server logs for details.",
       });
     }
   });
 
+  // Handle Python script execution errors
   pythonProcess.on("error", (error) => {
     console.error("Error starting Python process:", error);
     res.status(500).json({ error: "Error executing the Python script." });
