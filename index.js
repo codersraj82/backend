@@ -203,6 +203,16 @@ app.delete("/outputs/:fileName", (req, res) => {
   });
 });
 
+pythonProcess.on("exit", (code) => {
+  if (code === 0) {
+    console.log("Python script executed successfully");
+    return res.status(200).json({ message: "File processed successfully!" });
+  } else {
+    console.error(`Python process exited with code ${code}`);
+    return res.status(500).json({ error: "Failed to process the file." });
+  }
+});
+
 // Serve uploaded and output files statically
 app.use("/uploads", express.static(uploadDir));
 app.use("/outputs", express.static(outputDir));
