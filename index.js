@@ -100,6 +100,7 @@ app.post("/process/:fileName", (req, res) => {
   const pythonProcess = PythonShell.run(
     "./python_scripts/process_file.py",
     {
+      pythonPath: "./venv/bin/python", // Point to virtual environment Python
       args: [filePath, outputDir],
     },
     (err, results) => {
