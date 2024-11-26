@@ -58,6 +58,7 @@ app.post("/upload", upload.single("file"), (req, res) => {
     .status(200)
     .json({ message: "File uploaded successfully!", file: req.file.filename });
 });
+
 // fetch uploaded file
 app.get("/upload/:fileName", (req, res) => {
   const { fileName } = req.params;
@@ -110,27 +111,31 @@ app.post("/process/:fileName", (req, res) => {
   const outputImage = path.join(outputDir, `${fileName}-output.jpg`);
   const outputPdf = path.join(outputDir, `${fileName}-output.pdf`);
 
-  // Call the Python script
-  const pythonProcess = spawn("python", [
+  // Set Python path explicitly
+  PythonShell.defaultOptions = {
+    pythonPath: "/usr/local/bin/python", // Set the correct Python path
+    pythonOptions: ["-u"], // Optional: unbuffered output for real-time output
+  };
+
+  // Call the Python script using PythonShell
+  const options = {
+    args: [filePath, outputImage, outputPdf],
+  };
+
+  PythonShell.run(
     path.join(__dirname, "python_scripts", "process_file.py"),
-    filePath,
-    outputImage,
-    outputPdf,
-  ]);
+    options,
+    (err, result) => {
+      if (err) {
+        console.error("PythonShell error:", err);
+        return res
+          .status(500)
+          .json({
+            error: "Failed to process the file. See server logs for details.",
+          });
+      }
+      console.log("Python output:", result);
 
-  // Capture Python script's standard output and errors
-  pythonProcess.stdout.on("data", (data) => {
-    console.log(`Python script stdout: ${data}`);
-  });
-
-  pythonProcess.stderr.on("data", (data) => {
-    console.error(`Python script stderr: ${data}`);
-  });
-
-  // Handle script completion
-  pythonProcess.on("exit", (code) => {
-    if (code === 0) {
-      console.log("Python script completed successfully.");
       return res.status(200).json({
         message: "File processed successfully!",
         outputs: {
@@ -138,19 +143,8 @@ app.post("/process/:fileName", (req, res) => {
           pdf: path.basename(outputPdf),
         },
       });
-    } else {
-      console.error("Python script exited with code:", code);
-      return res.status(500).json({
-        error: "Failed to process the file. See server logs for details.",
-      });
     }
-  });
-
-  // Handle Python script execution errors
-  pythonProcess.on("error", (error) => {
-    console.error("Error starting Python process:", error);
-    res.status(500).json({ error: "Error executing the Python script." });
-  });
+  );
 });
 
 // List all output files
