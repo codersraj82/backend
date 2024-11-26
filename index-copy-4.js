@@ -95,61 +95,58 @@ app.post("/process/:fileName", (req, res) => {
   const { fileName } = req.params;
   const filePath = path.join(uploadDir, fileName);
 
-  // Check if the file exists
   if (!fs.existsSync(filePath)) {
     return res.status(404).json({ error: "File not found" });
   }
 
-  // Ensure the outputs directory exists
   const outputDir = path.join(__dirname, "outputs");
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  // Define paths for output files
-  const outputImage = path.join(outputDir, `${fileName}-output.jpg`);
-  const outputPdf = path.join(outputDir, `${fileName}-output.pdf`);
-
-  // Call the Python script
+  // Simulate calling Python script
+  const { spawn } = require("child_process");
   const pythonProcess = spawn("python", [
-    path.join(__dirname, "python_scripts", "process_file.py"),
+    "process_csv.py",
     filePath,
-    outputImage,
-    outputPdf,
+    outputDir,
   ]);
 
-  // Capture Python script's standard output and errors
-  pythonProcess.stdout.on("data", (data) => {
-    console.log(`Python script stdout: ${data}`);
-  });
-
-  pythonProcess.stderr.on("data", (data) => {
-    console.error(`Python script stderr: ${data}`);
-  });
-
-  // Handle script completion
   pythonProcess.on("exit", (code) => {
     if (code === 0) {
-      console.log("Python script completed successfully.");
-      return res.status(200).json({
-        message: "File processed successfully!",
-        outputs: {
-          image: path.basename(outputImage),
-          pdf: path.basename(outputPdf),
-        },
-      });
+      res.status(200).json({ message: "File processed successfully!" });
     } else {
-      console.error("Python script exited with code:", code);
-      return res.status(500).json({
-        error: "Failed to process the file. See server logs for details.",
-      });
+      res.status(500).json({ error: "Failed to process the file." });
     }
   });
 
-  // Handle Python script execution errors
   pythonProcess.on("error", (error) => {
     console.error("Error starting Python process:", error);
-    res.status(500).json({ error: "Error executing the Python script." });
+    res.status(500).json({ error: "Error processing the file." });
+  });
+
+  // Run Python script
+  const options = {
+    mode: "text",
+    pythonOptions: ["-u"],
+    scriptPath: path.join(__dirname, "python_scripts"), // Directory where Python scripts are stored
+    args: [inputFilePath, outputImage, outputPdf], // Arguments to pass to the script
+  };
+
+  PythonShell.run("process_file.py", options, (err, result) => {
+    if (err) {
+      console.error("Python script error:", err);
+      return res.status(500).json({ error: "Python processing failed." });
+    }
+
+    console.log("Python script output:", result);
+    res.status(200).json({
+      message: "Processing complete!",
+      outputs: {
+        image: path.basename(outputImage),
+        pdf: path.basename(outputPdf),
+      },
+    });
   });
 });
 
