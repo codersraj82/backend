@@ -107,15 +107,15 @@ app.post("/process/:fileName", (req, res) => {
   }
 
   // Define paths for output files
-  const outputImage = path.join(outputDir, `${fileName}-output.jpg`);
+  const outputImage = path.join(outputDir, `${fileName}-output.png`);
   const outputPdf = path.join(outputDir, `${fileName}-output.pdf`);
 
   // Use PythonShell to run the script  important
   //"./venv/bin/python"   // path for server execution on railway.com
-  const pythonProcess = spawn("./venv/bin/python", [
+  const pythonProcess = spawn("python", [
     "./python_scripts/process_xrd.py",
     filePath,
-    outputDir,
+    outputImage,
     outputPdf,
   ]);
 
