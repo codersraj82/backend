@@ -2,7 +2,8 @@ import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy.integrate import simps
+# from scipy.integrate import simps
+from numpy import trapz
 
 def process_xrd(file_path, output_image, output_pdf):
     # Load the XRD data
@@ -24,10 +25,12 @@ def process_xrd(file_path, output_image, output_pdf):
     corrected_intensity = intensity - baseline
 
     # Integrate total area (crystalline + amorphous)
-    total_area = simps(intensity, two_theta)
+    # total_area = simps(intensity, two_theta)
+    total_area = trapz(intensity, two_theta)
 
     # Integrate crystalline area (above the baseline)
-    crystalline_area = simps(corrected_intensity, two_theta)
+    # crystalline_area = simps(corrected_intensity, two_theta)
+    crystalline_area = trapz(corrected_intensity, two_theta)
 
     # Calculate % Crystallinity
     percent_crystallinity = (crystalline_area / total_area) * 100

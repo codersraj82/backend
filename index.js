@@ -111,9 +111,8 @@ app.post("/process/:fileName", (req, res) => {
   const outputPdf = path.join(outputDir, `${fileName}-output.pdf`);
 
   // Use PythonShell to run the script
-  // "./venv/bin/python",
   const pythonProcess = spawn("./venv/bin/python", [
-    "./python_scripts/process_xrd.py",
+    "./python_scripts/process_file.py",
     filePath,
     outputDir,
     outputPdf,
