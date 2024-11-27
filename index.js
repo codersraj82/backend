@@ -112,7 +112,7 @@ app.post("/process/:fileName", (req, res) => {
 
   // Use PythonShell to run the script  important
   //"./venv/bin/python"   // path for server execution on railway.com
-  const pythonProcess = spawn("python", [
+  const pythonProcess = spawn("./venv/bin/python", [
     "./python_scripts/process_xrd.py",
     filePath,
     outputImage,
