@@ -8,6 +8,11 @@ from numpy import trapz
 def process_xrd(file_path, output_image, output_pdf):
     # Load the XRD data
     data = pd.read_csv(file_path)
+     # Read the CSV file
+    xrd_data = pd.read_csv(file_path, header=0)
+
+    # Strip spaces from column names
+    xrd_data.columns = xrd_data.columns.str.strip()
 
     # Check if required columns are present
     if '2theta' not in data.columns or 'Intensity (a.u)' not in data.columns:
