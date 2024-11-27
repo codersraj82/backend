@@ -82,7 +82,7 @@ def process_xrd(file_path, output_image, output_pdf):
 
     # Plot the XRD data with the baseline and peaks
     plt.figure(figsize=(10, 6))
-    plt.plot(two_theta, intensity, label='Original XRD Data', color='blue')
+    plt.plot(two_theta, intensity, label='Original XRD Data', color='black')
     plt.plot(two_theta, [baseline] * len(two_theta), label='Baseline (Amorphous)', color='red', linestyle='--')
     plt.fill_between(two_theta, baseline, intensity, where=(intensity > baseline), color='green', alpha=0.3,
                      label='Crystalline Area')
@@ -91,15 +91,9 @@ def process_xrd(file_path, output_image, output_pdf):
     if len(peaks) > 0:
         plt.scatter(filtered_theta.iloc[peaks], filtered_intensity.iloc[peaks], color='red', zorder=5, label='Detected Peaks')
         
-        # Annotate each peak with its x (2θ) and y (intensity) values
-        for peak in peaks:
-            peak_x = filtered_theta.iloc[peak]
-            peak_y = filtered_intensity.iloc[peak]
-            plt.annotate(f'({peak_x:.2f}, {peak_y:.2f})', 
-                         (peak_x, peak_y), 
-                         textcoords="offset points", 
-                         xytext=(0, 10), 
-                         ha='center', color='red', fontsize=9)
+        # Draw vertical lines at the peak positions
+        # for peak in peaks:
+        #     plt.axvline(x=filtered_theta.iloc[peak], color='blue', linestyle='--')
 
         # Display FWHM (Full Width at Half Maximum)
         plt.hlines(y=half_max, xmin=fine_theta[left_idx], xmax=fine_theta[right_idx], color='purple', linestyle='--',
