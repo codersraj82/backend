@@ -5,7 +5,7 @@ from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 
 # Read the CSV file
-file_path = r"E:\Knime\Knime software\XRD\Hematite CSV.csv"  # Adjust the file path as needed
+file_path = r"C:\Users\Sarfaraz Shaikh\Desktop\Hematite_CSV.csv"  # Adjust the file path as needed
 xrd_data = pd.read_csv(file_path, header=0)
 
 # Strip spaces from column names

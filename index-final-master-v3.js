@@ -46,7 +46,7 @@ app.get("/upload", (req, res) => {
       console.error("Error reading directory:", err);
       return res.status(500).json({ message: "Unable to list files." });
     }
-    //console.log("Files found:", files);
+    console.log("Files found:", files);
     res.json(files);
   });
 });
@@ -70,8 +70,8 @@ app.get("/upload/:fileName", (req, res) => {
 
   const filePath = path.join(uploadDir, fileName);
 
-  //console.log("Requested file:", fileName);
-  //console.log("File path:", filePath);
+  console.log("Requested file:", fileName);
+  console.log("File path:", filePath);
 
   // Read the file
   fs.readFile(filePath, "utf8", (err, data) => {
@@ -93,13 +93,6 @@ app.get("/upload/:fileName", (req, res) => {
 // Process a file using Python
 app.post("/process/:fileName", (req, res) => {
   const { fileName } = req.params;
-  console.log("hello from post");
-  console.log(req.body);
-  const minTheta = Number(req.body.min_theta.current);
-  const maxTheta = Number(req.body.max_theta.current);
-  console.log("max_theta: ", req.body.max_theta.current);
-  const minPeakIntensity = Number(req.body.min_peak_intensity.current);
-  const thetaDistance = Number(req.body.theta_distance.current);
   const filePath = path.join(uploadDir, fileName);
 
   // Check if the file exists
@@ -124,10 +117,6 @@ app.post("/process/:fileName", (req, res) => {
     filePath,
     outputImage,
     outputPdf,
-    minTheta,
-    maxTheta,
-    minPeakIntensity,
-    thetaDistance,
   ]);
 
   pythonProcess.stdout.on("data", (data) => {

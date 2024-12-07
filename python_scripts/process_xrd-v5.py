@@ -6,12 +6,11 @@ from scipy.signal import find_peaks
 from scipy.interpolate import interp1d
 from numpy import trapezoid  # Update import from trapz to trapezoid
 
-def process_xrd(file_path, output_image, output_pdf, min_theta, max_theta,min_intensity,theta_distance,max_intensity=20000,max_peaks=9):
+def process_xrd(file_path, output_image, output_pdf, min_theta, max_theta,min_intensity,max_intensity=20000,max_peaks=9):
 
     min_theta = float(min_theta)
     max_theta = float(max_theta)
     min_intensity = float(min_intensity)
-    theta_distance= float(theta_distance)
     
     # Set output encoding to UTF-8
     sys.stdout.reconfigure(encoding='utf-8')
@@ -53,9 +52,9 @@ def process_xrd(file_path, output_image, output_pdf, min_theta, max_theta,min_in
     filtered_intensity = filtered_data['intensity']
 
     
-    
-        # Find peaks in the filtered intensity data
-    peaks, properties = find_peaks(filtered_intensity, height=min_intensity, prominence=95, distance=theta_distance)
+
+    # Find peaks in the filtered intensity data
+    peaks, properties = find_peaks(filtered_intensity, height=min_intensity, prominence=50, distance=10)
 
     if len(peaks) > 0:
         # Get the index of the highest peak
@@ -138,5 +137,4 @@ if __name__ == "__main__":
         min_theta  = sys.argv[4]
         max_theta =sys.argv[5]
         min_intensity= sys.argv[6]
-        theta_distance = sys.argv[7]
-        process_xrd(input_csv, output_image, output_pdf,  min_theta, max_theta,min_intensity, theta_distance)
+        process_xrd(input_csv, output_image, output_pdf,  min_theta, max_theta,min_intensity)

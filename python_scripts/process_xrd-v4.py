@@ -6,13 +6,7 @@ from scipy.signal import find_peaks
 from scipy.interpolate import interp1d
 from numpy import trapezoid  # Update import from trapz to trapezoid
 
-def process_xrd(file_path, output_image, output_pdf, min_theta, max_theta,min_intensity,theta_distance,max_intensity=20000,max_peaks=9):
-
-    min_theta = float(min_theta)
-    max_theta = float(max_theta)
-    min_intensity = float(min_intensity)
-    theta_distance= float(theta_distance)
-    
+def process_xrd(file_path, output_image, output_pdf):
     # Set output encoding to UTF-8
     sys.stdout.reconfigure(encoding='utf-8')
     
@@ -48,14 +42,12 @@ def process_xrd(file_path, output_image, output_pdf, min_theta, max_theta,min_in
     percent_crystallinity = (crystalline_area / total_area) * 100
 
     # Filter the data to include only 2-theta values between 20° and 70°
-    filtered_data = data[(two_theta >= min_theta) & (two_theta <= max_theta)]
+    filtered_data = data[(two_theta >= 20) & (two_theta <= 70)]
     filtered_theta = filtered_data['2theta']
     filtered_intensity = filtered_data['intensity']
 
-    
-    
-        # Find peaks in the filtered intensity data
-    peaks, properties = find_peaks(filtered_intensity, height=min_intensity, prominence=95, distance=theta_distance)
+    # Find peaks in the filtered intensity data
+    peaks, properties = find_peaks(filtered_intensity, height=200, prominence=50)
 
     if len(peaks) > 0:
         # Get the index of the highest peak
@@ -90,10 +82,9 @@ def process_xrd(file_path, output_image, output_pdf, min_theta, max_theta,min_in
 
     # Plot the XRD data with the baseline and peaks
     plt.figure(figsize=(10, 6))
-    # plt.plot(two_theta, intensity, label='Original XRD Data', color='blue')
-    plt.plot(filtered_theta, filtered_intensity, label='Original XRD Data', color='blue')
-    plt.plot(filtered_theta, [baseline] * len(filtered_theta), label='Baseline (Amorphous)', color='red', linestyle='--')
-    plt.fill_between(filtered_theta, baseline, filtered_intensity, where=(filtered_intensity > baseline), color='green', alpha=0.3,
+    plt.plot(two_theta, intensity, label='Original XRD Data', color='blue')
+    plt.plot(two_theta, [baseline] * len(two_theta), label='Baseline (Amorphous)', color='red', linestyle='--')
+    plt.fill_between(two_theta, baseline, intensity, where=(intensity > baseline), color='green', alpha=0.3,
                      label='Crystalline Area')
     
     # Plot detected peaks as red dots
@@ -135,8 +126,4 @@ if __name__ == "__main__":
         input_csv = sys.argv[1]
         output_image = sys.argv[2]
         output_pdf = sys.argv[3]
-        min_theta  = sys.argv[4]
-        max_theta =sys.argv[5]
-        min_intensity= sys.argv[6]
-        theta_distance = sys.argv[7]
-        process_xrd(input_csv, output_image, output_pdf,  min_theta, max_theta,min_intensity, theta_distance)
+        process_xrd(input_csv, output_image, output_pdf)
