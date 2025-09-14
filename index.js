@@ -11,7 +11,8 @@ const PORT = 5000;
 
 // Middleware ....
 const corsOptions = {
-  origin: "*",
+ // origin: "*",
+  origin: "https://xrd-4bgx.onrender.com",  
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
   allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept"],
